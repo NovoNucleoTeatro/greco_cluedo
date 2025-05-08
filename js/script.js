@@ -1,7 +1,8 @@
-// Define a URL do teu serviço backend na Render
+// js/script.js
+
+// URL do teu serviço backend na Render
 const API_URL = 'https://greco-cluedo-backend.onrender.com';
 
-// Array de personagens (este mesmo que já tinhas no index.html)
 const characters = [
   { name: 'Personagem 1', img: 'images/person1.jpg', desc: 'Descrição breve da personagem 1.' },
   { name: 'Personagem 2', img: 'images/person2.jpg', desc: 'Descrição breve da personagem 2.' },
@@ -17,6 +18,9 @@ let currentPage = 0;
 const container = document.querySelector('.card-container');
 const pagination = document.querySelector('.pagination');
 
+/**
+ * Renderiza o cartão da personagem na página atual
+ */
 function renderCharacter(page) {
   const char = characters[page];
   container.innerHTML = `
@@ -37,28 +41,30 @@ function renderCharacter(page) {
       const data = await res.json();
       if (data.success) {
         alert(`Obrigado por votar na ${char.name}!`);
-        fetchVotes(); // opcional: atualizar contagens depois do voto
       } else {
         alert('Erro ao registar voto.');
       }
     } catch (err) {
-      console.error(err);
-      alert('Erro na comunicação com o servidor.');
+      console.error('Erro no POST /vote:', err);
+      alert('Erro de comunicação com o servidor.');
     }
   });
 
-  // Destaque do botão ativo
+  // Destaca o botão ativo
   document.querySelectorAll('.page-btn').forEach((btn, idx) => {
     btn.classList.toggle('active', idx === page);
   });
 }
 
+/**
+ * Gera os botões de paginação (1–8)
+ */
 function renderPagination() {
-  pagination.innerHTML = characters.map((_, idx) =>
-    `<button class="page-btn" data-page="${idx}">${idx + 1}</button>`
-  ).join('');
+  pagination.innerHTML = characters
+    .map((_, idx) => `<button class="page-btn" data-page="${idx}">${idx + 1}</button>`)
+    .join('');
 
-  pagination.addEventListener('click', (e) => {
+  pagination.addEventListener('click', e => {
     if (e.target.classList.contains('page-btn')) {
       currentPage = +e.target.dataset.page;
       renderCharacter(currentPage);
@@ -66,19 +72,6 @@ function renderPagination() {
   });
 }
 
-async function fetchVotes() {
-  try {
-    const res = await fetch(`${API_URL}/votes`);
-    const votes = await res.json();
-    console.log('Contagem de votos:', votes);
-    // Aqui podes adicionar código para mostrar esses resultados no DOM
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// Inicialização
+// Inicializa o front
 renderPagination();
 renderCharacter(currentPage);
-// Opcional: buscar votos logo ao carregar
-fetchVotes();
