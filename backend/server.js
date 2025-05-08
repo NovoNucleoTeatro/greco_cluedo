@@ -42,7 +42,7 @@ app.post('/vote', async (req, res) => {
 
 // Autenticação básica nas rotas admin
 app.use('/admin', basicAuth({
-  users: { 'admin': 'TUA_SENHA_AQUI' }, // substitui com a tua password
+  users: { 'admin': 'admin123' }, // substitui com a tua password
   challenge: true
 }));
 
