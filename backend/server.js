@@ -42,6 +42,7 @@ app.post('/vote', async (req, res) => {
 
 // Endpoint público para obter votos em JSON
 app.get('/votes', async (req, res) => {
+  console.log('GET /votes chamado');    // <— Adiciona esta linha para debug
   await db.read();
   res.json(db.data.votes);
 });
