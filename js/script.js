@@ -1,6 +1,4 @@
-// js/script.js
-
-// URL do teu serviço backend na Render
+// URL do serviço backend (Render)
 const API_URL = 'https://greco-cluedo-backend.onrender.com';
 
 const characters = [
@@ -18,9 +16,6 @@ let currentPage = 0;
 const container = document.querySelector('.card-container');
 const pagination = document.querySelector('.pagination');
 
-/**
- * Renderiza o cartão da personagem na página atual
- */
 function renderCharacter(page) {
   const char = characters[page];
   container.innerHTML = `
@@ -50,15 +45,11 @@ function renderCharacter(page) {
     }
   });
 
-  // Destaca o botão ativo
   document.querySelectorAll('.page-btn').forEach((btn, idx) => {
     btn.classList.toggle('active', idx === page);
   });
 }
 
-/**
- * Gera os botões de paginação (1–8)
- */
 function renderPagination() {
   pagination.innerHTML = characters
     .map((_, idx) => `<button class="page-btn" data-page="${idx}">${idx + 1}</button>`)
@@ -72,6 +63,6 @@ function renderPagination() {
   });
 }
 
-// Inicializa o front
+// Inicialização
 renderPagination();
 renderCharacter(currentPage);
