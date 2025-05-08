@@ -1,10 +1,11 @@
 const express = require('express');
 const path = require('path');
-// Para Lowdb v6+, importa JSONFile de lowdb/node
-const { Low } = require('lowdb');
+// Para Lowdb v6+, importa JSONFile de lowdb/node\ nconst { Low } = require('lowdb');
 const { JSONFile } = require('lowdb/node');
 const { nanoid } = require('nanoid');
 const cors = require('cors');
+// Autenticação básica para rotas admin
+const basicAuth = require('express-basic-auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,19 +14,17 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Servir frontend estático (index.html, css/, js/, images/)
+// Servir frontend público
 app.use(express.static(path.join(__dirname, '..')));
 
-// Configuração do DB
-const adapter = new JSONFile('db.json');
+// Configuração do DB\ nconst adapter = new JSONFile('db.json');
 const db = new Low(adapter, { votes: [] });
 (async () => {
   await db.read();
   await db.write();
 })();
 
-// Endpoints
-// Registar voto
+// Endpoints públicos
 app.post('/vote', async (req, res) => {
   const { character } = req.body;
   if (!character) return res.status(400).json({ error: 'Missing character' });
@@ -41,13 +40,25 @@ app.post('/vote', async (req, res) => {
   res.json({ success: true });
 });
 
-// Obter contagem de votos
-app.get('/votes', async (req, res) => {
+// Protege rotas admin com autenticação básica
+app.use('/admin', basicAuth({
+  users: { 'admin': 'senhaSegura' },
+  challenge: true
+}));
+
+// Página admin estática ou gerada com contagens
+app.get('/admin', async (req, res) => {
   await db.read();
-  res.json(db.data.votes);
+  // Podes criar um HTML simples ou servir um ficheiro
+  let html = '<h1>Resultados de Votação</h1><ul>';
+  db.data.votes.forEach(v => {
+    html += `<li>${v.character}: ${v.count} voto${v.count !== 1 ? 's' : ''}</li>`;
+  });
+  html += '</ul>';
+  res.send(html);
 });
 
-// Qualquer rota não reconhecida devolve index.html (Single Page)
+// Fallback SPA
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
