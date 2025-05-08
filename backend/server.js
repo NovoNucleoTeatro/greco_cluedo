@@ -40,9 +40,21 @@ app.post('/vote', async (req, res) => {
   res.json({ success: true });
 });
 
+// Endpoint público para obter votos em JSON
+app.get('/votes', async (req, res) => {
+  await db.read();
+  res.json(db.data.votes);
+});
+
+// Endpoint público para obter votos em JSON
+app.get('/votes', async (req, res) => {
+  await db.read();
+  res.json(db.data.votes);
+});
+
 // Autenticação básica nas rotas admin
 app.use('/admin', basicAuth({
-  users: { 'admin': 'admin123' }, // substitui com a tua password
+  users: { 'admin': 'TUA_SENHA_AQUI' }, // substitui com a tua password
   challenge: true
 }));
 
