@@ -26,7 +26,7 @@ const db = new Low(adapter, { votes: [] });
   await db.write();
 })();
 
-// Endpoint público para votar
+// Endpoint público para registar um voto
 app.post('/vote', async (req, res) => {
   const { character } = req.body;
   if (!character) return res.status(400).json({ error: 'Missing character' });
@@ -38,12 +38,6 @@ app.post('/vote', async (req, res) => {
   await db.write();
 
   res.json({ success: true });
-});
-
-// Endpoint público para obter votos em JSON
-app.get('/votes', async (req, res) => {
-  await db.read();
-  res.json(db.data.votes);
 });
 
 // Endpoint público para obter votos em JSON
@@ -69,7 +63,7 @@ app.get('/admin', async (req, res) => {
   res.send(html);
 });
 
-// Fallback para SPA
+// Fallback para SPA: só depois de rotas específicas
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
